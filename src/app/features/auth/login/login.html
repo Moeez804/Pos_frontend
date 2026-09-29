@@ -1,0 +1,56 @@
+<div class="login-page">
+
+  <div class="login-card">
+
+    <div class="login-header">
+      <h1>POS System</h1>
+      <p>Sign in to continue</p>
+    </div>
+
+    <form (ngSubmit)="onLogin()">
+
+      <div class="form-group">
+        <label for="username">Username</label>
+
+        <input
+          id="username"
+          type="text"
+          name="username"
+          [(ngModel)]="username"
+          autocomplete="username"
+          placeholder="Enter username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+
+        <input
+          id="password"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+          placeholder="Enter password"
+        />
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button
+        type="submit"
+        class="login-button"
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
