@@ -1,0 +1,13 @@
+.dashboard {
+  padding: 40px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.dashboard-header p {
+  margin-top: 10px;
+  color: #666;
+}

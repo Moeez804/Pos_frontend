@@ -1,0 +1,205 @@
+
+<div class="business-create-page">
+  <div class="page-header">
+    <div class="header-left">
+      <button
+        type="button"
+        class="back-button"
+        (click)="cancel()">
+        ← Back
+      </button>
+
+      <div>
+        <h1>Create Business</h1>
+
+        <p>
+          Add a new business to this tenant.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+  @if (successMessage) {
+    <div class="success-card">
+
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <div>
+        <h3>Success</h3>
+        <p>{{ successMessage }}</p>
+      </div>
+
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="error-card">
+
+      <div class="error-icon">
+        !
+      </div>
+
+      <div>
+        <h3>Unable to create business</h3>
+        <p>{{ errorMessage }}</p>
+      </div>
+
+    </div>
+  }
+
+  <!-- Form -->
+  <section class="form-section">
+
+    <div class="section-header">
+
+      <div>
+        <h2>Business Information</h2>
+
+        <p>
+          Enter the basic information for the new business.
+        </p>
+      </div>
+
+    </div>
+
+    <form
+      #businessForm="ngForm"
+      (ngSubmit)="onSubmit(businessForm)"
+      novalidate>
+
+      <div class="form-grid">
+
+        <!-- Business Name -->
+        <div class="form-group full-width">
+
+          <label for="name">
+            Business Name
+            <span class="required">*</span>
+          </label>
+
+          <input
+            id="name"
+            name="name"
+            type="text"
+            [(ngModel)]="name"
+            #nameField="ngModel"
+            required
+            maxlength="150"
+            placeholder="e.g. Al Madina Store"
+            [disabled]="isLoading" />
+
+          @if (
+            nameField.invalid &&
+            nameField.touched
+          ) {
+            <div class="field-error">
+              Business name is required.
+            </div>
+          }
+
+        </div>
+
+        <!-- Business Type -->
+        <div class="form-group">
+
+          <label for="businessType">
+            Business Type
+            <span class="required">*</span>
+          </label>
+
+          <select
+            id="businessType"
+            name="businessType"
+            [(ngModel)]="businessType"
+            #businessTypeField="ngModel"
+            required
+            [disabled]="isLoading">
+
+            <option
+              [ngValue]="null">
+              Select business type
+            </option>
+
+            @for (
+              type of businessTypes;
+              track type.value
+            ) {
+              <option
+                [ngValue]="type.value">
+                {{ type.label }}
+              </option>
+            }
+
+          </select>
+
+          @if (
+            businessTypeField.invalid &&
+            businessTypeField.touched
+          ) {
+            <div class="field-error">
+              Business type is required.
+            </div>
+          }
+
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+
+          <label for="description">
+            Description
+            <span class="optional">
+              Optional
+            </span>
+          </label>
+
+          <input
+            id="description"
+            name="description"
+            type="text"
+            [(ngModel)]="description"
+            maxlength="500"
+            placeholder="Short description"
+            [disabled]="isLoading" />
+
+        </div>
+
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="cancel()"
+          [disabled]="isLoading">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="primary-button"
+          [disabled]="isLoading">
+
+          @if (isLoading) {
+            <span class="button-loader"></span>
+            Creating...
+          } @else {
+            <span>✓</span>
+            Create Business
+          }
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+
+</div>

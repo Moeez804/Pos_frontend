@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
+  ActivatedRoute,
   Router
 } from '@angular/router';
 
@@ -19,6 +20,9 @@ export class Login {
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  tenantId: number | null = null;
 
   username = '';
   password = '';
@@ -26,16 +30,29 @@ export class Login {
   isLoading = false;
   errorMessage = '';
 
+  constructor() {
+    const tenantId =
+      Number(
+        this.route.snapshot.paramMap.get('tenantId')
+      );
+
+    if (tenantId > 0) {
+      this.tenantId = tenantId;
+    }
+  }
+
   onLogin(): void {
 
     this.errorMessage = '';
 
     if (!this.username || !this.password) {
-      this.errorMessage = 'Username and password are required.';
+      this.errorMessage =
+        'Username and password are required.';
       return;
     }
 
     const request: LoginRequest = {
+      tenantId: this.tenantId,
       username: this.username,
       password: this.password
     };
@@ -43,10 +60,25 @@ export class Login {
     this.isLoading = true;
 
     this.authService.login(request).subscribe({
-      next: () => {
+      next: (response) => {
         this.isLoading = false;
 
-        this.router.navigate(['/dashboard']);
+        if (response.roles.includes('SuperAdmin')) {
+          this.router.navigate([
+            '/superadmin'
+          ]);
+          return;
+        }
+
+        if (!response.tenantId) {
+          this.errorMessage =
+            'Tenant information is missing.';
+          return;
+        }
+
+        this.router.navigate([
+          `/${response.tenantId}/dashboard`
+        ]);
       },
 
       error: (error) => {
@@ -54,7 +86,7 @@ export class Login {
 
         if (error.status === 401) {
           this.errorMessage =
-            'Invalid username or password.';
+            'Invalid username, password, or tenant.';
         } else {
           this.errorMessage =
             'Unable to connect to the server.';

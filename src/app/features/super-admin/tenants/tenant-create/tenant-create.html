@@ -1,0 +1,212 @@
+<div class="tenant-create-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Create Tenant</h1>
+
+      <p>
+        Create a new tenant and its TenantAdmin account.
+      </p>
+    </div>
+
+    <a
+      routerLink="/superadmin/tenants"
+      class="back-button">
+      ← Back to Tenants
+    </a>
+
+  </div>
+
+  @if (errorMessage) {
+
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+
+  }
+
+  @if (successMessage) {
+
+    <div class="success-message">
+      {{ successMessage }}
+    </div>
+
+  }
+
+  <form
+    class="tenant-form"
+    (ngSubmit)="onSubmit()">
+
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <h2>Tenant Information</h2>
+
+        <p>
+          Basic information about the tenant.
+        </p>
+
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="tenantName">
+            Tenant Name
+          </label>
+
+          <input
+            id="tenantName"
+            type="text"
+            name="tenantName"
+            [(ngModel)]="tenantName"
+            placeholder="e.g. Al Madina Group"
+            autocomplete="organization">
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="databaseServer">
+            Database Server
+          </label>
+
+          <select
+            id="databaseServer"
+            name="databaseServer"
+            [(ngModel)]="databaseServerId"
+            [disabled]="isLoadingServers || isLoading">
+
+            <option [ngValue]="null">
+              {{ isLoadingServers
+                ? 'Loading database servers...'
+                : 'Select database server' }}
+            </option>
+
+            @for (
+              server of databaseServers;
+              track server.id
+            ) {
+
+              <option [ngValue]="server.id">
+                {{ server.name }} — {{ server.serverAddress }}
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <h2>Tenant Administrator</h2>
+
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="adminFullName">
+            Full Name
+          </label>
+
+          <input
+            id="adminFullName"
+            type="text"
+            name="adminFullName"
+            [(ngModel)]="adminFullName"
+            placeholder="e.g. Al Madina Administrator"
+            autocomplete="name">
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="adminUsername">
+            Username
+          </label>
+
+          <input
+            id="adminUsername"
+            type="text"
+            name="adminUsername"
+            [(ngModel)]="adminUsername"
+            placeholder="e.g. almadina"
+            autocomplete="username">
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="adminPassword">
+            Password
+          </label>
+
+          <input
+            id="adminPassword"
+            type="password"
+            name="adminPassword"
+            [(ngModel)]="adminPassword"
+            placeholder="Enter password"
+            autocomplete="new-password">
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="confirmPassword">
+            Confirm Password
+          </label>
+
+          <input
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            placeholder="Confirm password"
+            autocomplete="new-password">
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <div class="form-actions">
+
+      <a
+        routerLink="/superadmin/tenants"
+        class="cancel-button">
+        Cancel
+      </a>
+
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="isLoading">
+
+        @if (isLoading) {
+          Creating...
+        } @else {
+          Create Tenant
+        }
+
+      </button>
+
+    </div>
+
+  </form>
+
+</div>
+

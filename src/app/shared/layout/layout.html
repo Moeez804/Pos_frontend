@@ -1,0 +1,117 @@
+<div class="layout">
+  <header class="topbar">
+
+    <button
+      type="button"
+      class="menu-button"
+      (click)="toggleSidebar()"
+      aria-label="Toggle menu">
+      ☰
+    </button>
+
+    <div class="topbar-title">
+      POS Management System
+    </div>
+
+  </header>
+  @if (isSidebarOpen) {
+    <div
+      class="sidebar-overlay"
+      (click)="closeSidebar()">
+    </div>
+  }
+  <aside
+    class="sidebar"
+    [class.open]="isSidebarOpen">
+    <div class="sidebar-header">
+      <h2>POS</h2>
+      <button
+        type="button"
+        class="close-button"
+        (click)="closeSidebar()">
+        ×
+      </button>
+
+    </div>
+    <!-- Navigation -->
+<nav class="sidebar-menu">
+<!-- Dashboard -->
+<a
+  [routerLink]="getDashboardRoute()"
+  routerLinkActive="active"
+  [routerLinkActiveOptions]="{ exact: true }"
+  class="menu-item"
+  (click)="closeSidebar()">
+
+  <span class="menu-icon">⌂</span>
+
+  <span>Dashboard</span>
+
+</a>
+
+
+  <!-- Super Admin - Tenants -->
+  @if (isSuperAdmin) {
+
+    <a
+      routerLink="/superadmin/tenants"
+      routerLinkActive="active"
+      class="menu-item"
+      (click)="closeSidebar()">
+
+      <span class="menu-icon">▣</span>
+
+      <span>Tenants</span>
+
+    </a>
+
+  }
+
+
+  <!-- Categories -->
+  @if (isAdmin || isManager) {
+
+@if (isAdmin || isManager) {
+
+  <a
+    [routerLink]="getCategoriesRoute()"
+    routerLinkActive="active"
+    class="menu-item"
+    (click)="closeSidebar()">
+
+    <span class="menu-icon">▦</span>
+
+    <span>Categories</span>
+
+  </a>
+
+}
+
+  }
+
+
+  <!-- Logout -->
+  <button
+    type="button"
+    class="menu-item logout-item"
+    (click)="logout()">
+
+    <span class="menu-icon">↪</span>
+
+    <span>Logout</span>
+
+  </button>
+
+</nav>
+
+  </aside>
+
+
+  <!-- Page Content -->
+  <main class="page-content">
+
+    <router-outlet></router-outlet>
+
+  </main>
+
+</div>

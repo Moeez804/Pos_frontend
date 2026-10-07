@@ -1,0 +1,399 @@
+<div class="tenant-detail-page">
+
+  <!-- Header -->
+  <div class="page-header">
+
+    <div class="header-left">
+      <a
+        routerLink="/superadmin/tenants"
+        class="back-button">
+        ← Back
+      </a>
+
+      <div>
+        <h1>Tenant Details</h1>
+
+        <p>
+          View tenant information, database, administrator
+          and businesses.
+        </p>
+      </div>
+    </div>
+
+    @if (tenant) {
+      <div class="header-actions">
+        <span
+          class="status-badge"
+          [class.active]="tenant.isActive"
+          [class.inactive]="!tenant.isActive">
+          {{ tenant.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+    }
+
+  </div>
+
+
+  <!-- Loading -->
+  @if (isLoading) {
+
+    <div class="state-card">
+      <div class="loader"></div>
+
+      <p>Loading tenant details...</p>
+    </div>
+
+  }
+
+
+  <!-- Error -->
+  @if (!isLoading && errorMessage) {
+
+    <div class="error-card">
+      <div class="error-icon">!</div>
+
+      <div>
+        <h3>Unable to load tenant</h3>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
+
+  }
+
+
+  <!-- Tenant Details -->
+  @if (!isLoading && tenant) {
+
+    <!-- Basic Information -->
+    <section class="detail-section">
+
+      <div class="section-header">
+        <div>
+          <h2>Basic Information</h2>
+          <p>General information about this tenant.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+
+        <div class="info-item">
+          <span class="info-label">
+            Tenant Name
+          </span>
+
+          <span class="info-value">
+            {{ tenant.name }}
+          </span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">
+            Tenant ID
+          </span>
+
+          <span class="info-value">
+            #{{ tenant.id }}
+          </span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">
+            Status
+          </span>
+
+          <span
+            class="small-status"
+            [class.active]="tenant.isActive"
+            [class.inactive]="!tenant.isActive">
+            {{ tenant.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">
+            Created Date
+          </span>
+
+          <span class="info-value">
+            {{ formatDate(tenant.createdAt) }}
+          </span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">
+            Users
+          </span>
+
+          <span class="info-value">
+            {{ tenant.userCount }}
+          </span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Database -->
+    <section class="detail-section">
+
+      <div class="section-header">
+        <div>
+          <h2>Database</h2>
+          <p>Tenant database configuration.</p>
+        </div>
+      </div>
+
+      @if (tenant.database) {
+
+        <div class="info-grid">
+
+          <div class="info-item">
+            <span class="info-label">
+              Database Name
+            </span>
+
+            <span class="info-value">
+              {{ tenant.database.databaseName }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">
+              Database Server
+            </span>
+
+            <span class="info-value">
+              {{ tenant.database.serverName }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">
+              Database Status
+            </span>
+
+            <span
+              class="small-status"
+              [class.active]="tenant.database.isActive"
+              [class.inactive]="!tenant.database.isActive">
+              {{ tenant.database.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+
+        </div>
+
+      } @else {
+
+        <div class="empty-inline">
+          <span class="empty-icon">!</span>
+
+          <div>
+            <strong>Database not configured</strong>
+            <p>
+              No active database configuration was found
+              for this tenant.
+            </p>
+          </div>
+        </div>
+
+      }
+
+    </section>
+
+
+    <!-- Administrator -->
+    <section class="detail-section">
+
+      <div class="section-header">
+        <div>
+          <h2>Administrator</h2>
+          <p>Tenant administrator information.</p>
+        </div>
+      </div>
+
+      @if (tenant.administrator) {
+
+        <div class="admin-card">
+
+          <div class="admin-avatar">
+            {{ tenant.administrator.fullName.charAt(0).toUpperCase() }}
+          </div>
+
+          <div class="admin-info">
+
+            <div class="admin-name">
+              {{ tenant.administrator.fullName }}
+            </div>
+
+            <div class="admin-username">
+              @{{ tenant.administrator.username }}
+            </div>
+
+          </div>
+
+          <span
+            class="small-status"
+            [class.active]="tenant.administrator.isActive"
+            [class.inactive]="!tenant.administrator.isActive">
+            {{ tenant.administrator.isActive ? 'Active' : 'Inactive' }}
+          </span>
+
+        </div>
+
+      } @else {
+
+        <div class="empty-inline">
+          <span class="empty-icon">!</span>
+
+          <div>
+            <strong>Administrator not found</strong>
+            <p>
+              No administrator information is available
+              for this tenant.
+            </p>
+          </div>
+        </div>
+
+      }
+
+    </section>
+
+
+    <!-- Businesses -->
+    <section class="detail-section">
+
+      <div class="section-header">
+
+        <div>
+          <h2>Businesses</h2>
+
+          <p>
+            Businesses belonging to this tenant.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="primary-button"
+          (click)="createBusiness()">
+          + Create Business
+        </button>
+
+      </div>
+
+
+      @if (tenant.businesses.length > 0) {
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Business Name</th>
+                <th>Business Type</th>
+                <th>Status</th>
+                <th>Created Date</th>
+                <th>View Business Details</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (
+                business of tenant.businesses;
+                track business.id
+              ) {
+
+                <tr>
+
+                  <td>
+                    <div class="business-name">
+                      {{ business.name }}
+                    </div>
+
+                    @if (business.description) {
+                      <div class="business-description">
+                        {{ business.description }}
+                      </div>
+                    }
+                  </td>
+
+                  <td>
+                    <span class="type-badge">
+                      {{ getBusinessTypeName(business.businessType) }}
+                    </span>
+                  </td>
+
+                  <td>
+
+                    <span
+                      class="small-status"
+                      [class.active]="business.isActive"
+                      [class.inactive]="!business.isActive">
+
+                      {{
+                        business.isActive
+                          ? 'Active'
+                          : 'Inactive'
+                      }}
+
+                    </span>
+
+                  </td>
+
+                  <td>
+                    {{ formatDate(business.createdAt) }}
+                  </td>
+                  <td class="actions-cell">
+                    <button type="button"
+                     class="view-button"
+                     [routerLink]="['/superadmin/tenants',tenant.id, 'businesses', business.id]"
+                     title="View Business Details"
+                     aria-label="View Business Details">
+                     <span class="view-icon">👁</span>
+                    </button>
+                </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      } @else {
+
+        <div class="business-empty">
+
+          <div class="business-empty-icon">
+            🏢
+          </div>
+
+          <h3>No businesses yet</h3>
+
+          <p>
+            This tenant does not have any businesses.
+            Create the first business to get started.
+          </p>
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="createBusiness()">
+            + Create Business
+          </button>
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+</div>

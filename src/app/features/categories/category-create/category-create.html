@@ -1,0 +1,138 @@
+<div class="category-create-page">
+
+  <div class="page-header">
+    <div>
+      <h1>Create Category</h1>
+      <p>Add a new category to a branch.</p>
+    </div>
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="goBack()">
+      Back to Categories
+    </button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="message error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="message success">
+      {{ successMessage }}
+    </div>
+  }
+
+  <div class="form-card">
+
+    <div class="form-group">
+      <label for="name">
+        Category Name
+      </label>
+
+      <input
+        id="name"
+        type="text"
+        [(ngModel)]="name"
+        placeholder="Enter category name"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="description">
+        Description
+      </label>
+
+      <textarea
+        id="description"
+        rows="4"
+        [(ngModel)]="description"
+        placeholder="Enter category description">
+      </textarea>
+    </div>
+
+    @if (isAdmin) {
+
+      <div class="form-group">
+        <label for="branch">
+          Branch
+        </label>
+
+        @if (isLoadingBranches) {
+
+          <p class="loading">
+            Loading branches...
+          </p>
+
+        } @else {
+
+          <select
+            id="branch"
+            [(ngModel)]="branchId">
+
+            <option [ngValue]="null">
+              Select Branch
+            </option>
+
+            @for (
+              branch of branches;
+              track branch.id
+            ) {
+
+              <option [ngValue]="branch.id">
+                {{ branch.name }}
+                @if (branch.isMainBranch) {
+                  (Main)
+                }
+              </option>
+
+            }
+
+          </select>
+
+        }
+
+      </div>
+
+    }
+
+    <!-- @if (!isAdmin) {
+
+      <div class="info-message">
+        The category will automatically be assigned
+        to your branch.
+      </div>
+
+    } -->
+
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="cancel-button"
+        (click)="goBack()">
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="save-button"
+        (click)="createCategory()"
+        [disabled]="isSaving">
+
+        @if (isSaving) {
+          Creating...
+        } @else {
+          Create Category
+        }
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,362 @@
+<div class="page-container">
+
+  <div class="page-header">
+
+    <div class="header-left">
+
+      <a
+        [routerLink]="[
+          '/superadmin/tenants',
+          tenantId,
+          'businesses',
+          businessId
+        ]"
+        class="back-button">
+        ← Back
+      </a>
+
+      <div>
+        <h1>Create Branch</h1>
+
+        <p>
+          Add a new branch and assign its manager.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  @if (errorMessage) {
+
+    <div class="alert error-alert">
+      <span class="alert-icon">!</span>
+
+      <span>
+        {{ errorMessage }}
+      </span>
+    </div>
+
+  }
+
+
+  @if (successMessage) {
+
+    <div class="alert success-alert">
+      <span class="alert-icon">✓</span>
+
+      <span>
+        {{ successMessage }}
+      </span>
+    </div>
+
+  }
+
+
+  <form
+    #branchForm="ngForm"
+    (ngSubmit)="onSubmit(branchForm)"
+    novalidate>
+
+
+    <!-- Branch Information -->
+
+    <section class="form-card">
+
+      <div class="section-header">
+
+        <div>
+          <h2>Branch Information</h2>
+
+          <p>
+            Enter the details for the new branch.
+          </p>
+        </div>
+
+      </div>
+
+
+      <!-- Branch Name -->
+
+      <div class="form-group">
+
+        <label for="name">
+          Branch Name
+          <span class="required">*</span>
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          name="name"
+          [(ngModel)]="name"
+          #nameField="ngModel"
+          required
+          maxlength="100"
+          placeholder="e.g. Faisalabad Branch"
+          [disabled]="isLoading" />
+
+        @if (
+          nameField.invalid &&
+          nameField.touched
+        ) {
+
+          <div class="field-error">
+            Branch name is required.
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- Address -->
+
+      <div class="form-group">
+
+        <label for="address">
+          Address
+        </label>
+
+        <textarea
+          id="address"
+          name="address"
+          [(ngModel)]="address"
+          maxlength="500"
+          rows="3"
+          placeholder="Enter branch address"
+          [disabled]="isLoading"></textarea>
+
+      </div>
+
+
+      <!-- Phone -->
+
+      <div class="form-group">
+
+        <label for="phone">
+          Phone
+        </label>
+
+        <input
+          id="phone"
+          type="text"
+          name="phone"
+          [(ngModel)]="phone"
+          maxlength="30"
+          placeholder="e.g. 041-1234567"
+          [disabled]="isLoading" />
+
+      </div>
+
+
+      <!-- Main Branch -->
+
+      <div class="checkbox-group">
+
+        <label class="checkbox-label">
+
+          <input
+            type="checkbox"
+            name="isMainBranch"
+            [(ngModel)]="isMainBranch"
+            [disabled]="isLoading" />
+
+          <span>
+            Set as Main Branch
+          </span>
+
+        </label>
+
+        <p class="checkbox-help">
+          A business can have only one main branch.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- Manager Account -->
+
+    <section class="form-card manager-card">
+
+      <div class="section-header">
+
+        <div>
+          <h2>Manager Account</h2>
+
+          <p>
+            Create the manager account for this branch.
+          </p>
+        </div>
+
+      </div>
+
+
+      <!-- Manager Username -->
+
+      <div class="form-group">
+
+        <label for="managerUsername">
+          Manager Username
+          <span class="required">*</span>
+        </label>
+
+        <input
+          id="managerUsername"
+          type="text"
+          name="managerUsername"
+          [(ngModel)]="managerUsername"
+          #managerUsernameField="ngModel"
+          required
+          maxlength="50"
+          autocomplete="off"
+          placeholder="e.g. fsd.manager"
+          [disabled]="isLoading" />
+
+        @if (
+          managerUsernameField.invalid &&
+          managerUsernameField.touched
+        ) {
+
+          <div class="field-error">
+            Manager username is required.
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- Manager Full Name -->
+
+      <div class="form-group">
+
+        <label for="managerFullName">
+          Manager Full Name
+          <span class="required">*</span>
+        </label>
+
+        <input
+          id="managerFullName"
+          type="text"
+          name="managerFullName"
+          [(ngModel)]="managerFullName"
+          #managerFullNameField="ngModel"
+          required
+          maxlength="150"
+          placeholder="e.g. Abdul Moeez"
+          [disabled]="isLoading" />
+
+        @if (
+          managerFullNameField.invalid &&
+          managerFullNameField.touched
+        ) {
+
+          <div class="field-error">
+            Manager full name is required.
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- Manager Password -->
+
+      <div class="form-group">
+
+        <label for="managerPassword">
+          Manager Password
+          <span class="required">*</span>
+        </label>
+
+        <input
+          id="managerPassword"
+          type="password"
+          name="managerPassword"
+          [(ngModel)]="managerPassword"
+          #managerPasswordField="ngModel"
+          required
+          minlength="6"
+          autocomplete="new-password"
+          placeholder="Enter manager password"
+          [disabled]="isLoading" />
+
+        @if (
+          managerPasswordField.invalid &&
+          managerPasswordField.touched
+        ) {
+
+          @if (
+            managerPasswordField.errors?.['required']
+          ) {
+
+            <div class="field-error">
+              Manager password is required.
+            </div>
+
+          }
+
+          @else if (
+            managerPasswordField.errors?.['minlength']
+          ) {
+
+            <div class="field-error">
+              Password must be at least 6 characters.
+            </div>
+
+          }
+
+        }
+
+        <p class="field-help">
+          The password must meet the system password requirements.
+        </p>
+
+      </div>
+
+
+      <!-- Actions -->
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="cancel()"
+          [disabled]="isLoading">
+          Cancel
+        </button>
+
+
+        <button
+          type="submit"
+          class="primary-button"
+          [disabled]="isLoading">
+
+          @if (isLoading) {
+
+            <span class="button-loader"></span>
+
+            Creating...
+
+          }
+
+          @else {
+
+            Create Branch
+
+          }
+
+        </button>
+
+      </div>
+
+    </section>
+
+  </form>
+
+</div>

@@ -1,0 +1,302 @@
+<div class="page-container">
+
+  <div class="page-header">
+
+    <div class="header-left">
+      <a
+        [routerLink]="[
+          '/superadmin/tenants',
+          tenantId
+        ]"
+        class="back-button">
+        ← Back
+      </a>
+
+      <div>
+        <h1>Business Details</h1>
+
+        @if (business) {
+          <p>{{ business.name }}</p>
+        }
+      </div>
+    </div>
+
+    @if (business) {
+      <span
+        class="status-badge"
+        [class.active]="business.isActive"
+        [class.inactive]="!business.isActive">
+        {{ business.isActive ? 'Active' : 'Inactive' }}
+      </span>
+    }
+
+  </div>
+
+
+  @if (isLoading) {
+
+    <div class="state-card">
+      <div class="loader"></div>
+      <p>Loading business details...</p>
+    </div>
+
+  }
+
+
+  @else if (errorMessage) {
+
+    <div class="state-card error-state">
+      <div class="error-icon">!</div>
+
+      <h3>Unable to Load Business</h3>
+
+      <p>{{ errorMessage }}</p>
+
+      <a
+        [routerLink]="[
+          '/superadmin/tenants',
+          tenantId
+        ]"
+        class="back-link">
+        Back to Tenant
+      </a>
+    </div>
+
+  }
+
+
+  @else if (business) {
+
+    <!-- Basic Information -->
+
+    <section class="details-card">
+
+      <div class="section-header">
+        <div>
+          <h2>Basic Information</h2>
+          <p>Business information and status</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+
+        <div class="info-item">
+          <span class="info-label">
+            Business Name
+          </span>
+
+          <span class="info-value">
+            {{ business.name }}
+          </span>
+        </div>
+
+
+        <div class="info-item">
+          <span class="info-label">
+            Business ID
+          </span>
+
+          <span class="info-value">
+            #{{ business.id }}
+          </span>
+        </div>
+
+
+        <div class="info-item">
+          <span class="info-label">
+            Business Type
+          </span>
+
+          <span class="type-badge">
+            {{ getBusinessTypeName(
+              business.businessType
+            ) }}
+          </span>
+        </div>
+
+
+        <div class="info-item">
+          <span class="info-label">
+            Status
+          </span>
+
+          <span
+            class="small-status"
+            [class.active]="business.isActive"
+            [class.inactive]="!business.isActive">
+            {{ business.isActive
+              ? 'Active'
+              : 'Inactive'
+            }}
+          </span>
+        </div>
+
+
+        <div class="info-item">
+          <span class="info-label">
+            Created Date
+          </span>
+
+          <span class="info-value">
+            {{ formatDate(business.createdAt) }}
+          </span>
+        </div>
+
+
+        <div class="info-item description-item">
+
+          <span class="info-label">
+            Description
+          </span>
+
+          <span class="info-value">
+            {{ business.description || 'No description provided.' }}
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Branches -->
+
+    <section class="details-card branches-card">
+
+      <div class="section-header">
+
+        <div>
+          <h2>Branches</h2>
+
+          <p>
+            Branches belonging to this business
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="primary-button"
+          (click)="addBranch()">
+          + Add Branch
+        </button>
+
+      </div>
+
+
+      @if (business.branches.length === 0) {
+
+        <div class="empty-state">
+
+          <div class="empty-icon">
+            ⌂
+          </div>
+
+          <h3>No Branches Yet</h3>
+
+          <p>
+            This business does not have any branches yet.
+          </p>
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="addBranch()">
+            + Add First Branch
+          </button>
+
+        </div>
+
+      }
+
+      @else {
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Branch Name</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Created Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (
+                branch of business.branches;
+                track branch.id
+              ) {
+
+                <tr>
+
+                  <td>
+                    <div class="branch-name">
+                      {{ branch.name }}
+                    </div>
+                  </td>
+
+                  <td>
+                    {{ branch.address || '—' }}
+                  </td>
+
+                  <td>
+                    {{ branch.phone || '—' }}
+                  </td>
+
+                  <td>
+
+                    @if (branch.isMainBranch) {
+                      <span class="main-badge">
+                        Main Branch
+                      </span>
+                    }
+
+                    @else {
+                      <span class="secondary-text">
+                        Branch
+                      </span>
+                    }
+
+                  </td>
+
+                  <td>
+
+                    <span
+                      class="small-status"
+                      [class.active]="branch.isActive"
+                      [class.inactive]="!branch.isActive">
+                      {{ branch.isActive
+                        ? 'Active'
+                        : 'Inactive'
+                      }}
+                    </span>
+
+                  </td>
+
+                  <td>
+                    {{ formatDate(branch.createdAt) }}
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+</div>
