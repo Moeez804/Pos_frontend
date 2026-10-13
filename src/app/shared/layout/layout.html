@@ -1,4 +1,6 @@
 <div class="layout">
+
+  <!-- Top Bar -->
   <header class="topbar">
 
     <button
@@ -6,103 +8,256 @@
       class="menu-button"
       (click)="toggleSidebar()"
       aria-label="Toggle menu">
-      ☰
+
+      <span class="hamburger-icon">☰</span>
+
     </button>
 
     <div class="topbar-title">
-      POS Management System
+      <span class="brand-mark">POS</span>
+      <span class="brand-title">Management System</span>
+    </div>
+
+    <!-- Profile -->
+    <div class="profile-area">
+
+      <button
+        type="button"
+        class="avatar-button"
+        (click)="toggleProfileMenu()"
+        aria-label="Profile menu">
+
+        <span class="avatar">
+          {{ userInitials }}
+        </span>
+
+        <span class="avatar-arrow">⌄</span>
+
+      </button>
+
+      @if (isProfileMenuOpen) {
+
+        <div class="profile-menu">
+
+          <div class="profile-menu-header">
+            <span class="profile-menu-avatar">
+              {{ userInitials }}
+            </span>
+
+            <div>
+              <strong>My Account</strong>
+              <small>Account Settings</small>
+            </div>
+          </div>
+
+          <div class="profile-divider"></div>
+
+          <a
+            [routerLink]="getChangePasswordRoute()"
+            class="profile-menu-item"
+            (click)="closeProfileMenu()">
+
+            <span class="profile-icon">🔑</span>
+            <span>Change Password</span>
+
+          </a>
+
+          <button
+            type="button"
+            class="profile-menu-item logout-profile"
+            (click)="logout()">
+
+            <span class="profile-icon">↪</span>
+            <span>Logout</span>
+
+          </button>
+
+        </div>
+
+      }
+
     </div>
 
   </header>
+
+
+  <!-- Sidebar Overlay -->
   @if (isSidebarOpen) {
+
     <div
       class="sidebar-overlay"
       (click)="closeSidebar()">
     </div>
+
   }
+
+
+  <!-- Sidebar -->
   <aside
     class="sidebar"
     [class.open]="isSidebarOpen">
+
+    <!-- Sidebar Header -->
     <div class="sidebar-header">
-      <h2>POS</h2>
+
+      <div class="sidebar-brand">
+
+        <div class="sidebar-logo">
+          POS
+        </div>
+
+        <div class="sidebar-brand-text">
+          <strong>POS System</strong>
+          <span>Management</span>
+        </div>
+
+      </div>
+
       <button
         type="button"
         class="close-button"
-        (click)="closeSidebar()">
+        (click)="closeSidebar()"
+        aria-label="Close sidebar">
+
         ×
+
       </button>
 
     </div>
+
+
     <!-- Navigation -->
-<nav class="sidebar-menu">
-<!-- Dashboard -->
-<a
-  [routerLink]="getDashboardRoute()"
-  routerLinkActive="active"
-  [routerLinkActiveOptions]="{ exact: true }"
-  class="menu-item"
-  (click)="closeSidebar()">
+    <nav class="sidebar-menu">
 
-  <span class="menu-icon">⌂</span>
-
-  <span>Dashboard</span>
-
-</a>
+      <div class="menu-section-title">
+        MAIN MENU
+      </div>
 
 
-  <!-- Super Admin - Tenants -->
-  @if (isSuperAdmin) {
+      <!-- Dashboard -->
+      <a
+        [routerLink]="getDashboardRoute()"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="menu-item"
+        (click)="closeSidebar()">
 
-    <a
-      routerLink="/superadmin/tenants"
-      routerLinkActive="active"
-      class="menu-item"
-      (click)="closeSidebar()">
+        <span class="menu-icon dashboard-icon">
+          ⌂
+        </span>
 
-      <span class="menu-icon">▣</span>
+        <span class="menu-label">
+          Dashboard
+        </span>
 
-      <span>Tenants</span>
-
-    </a>
-
-  }
-
-
-  <!-- Categories -->
-  @if (isAdmin || isManager) {
-
-@if (isAdmin || isManager) {
-
-  <a
-    [routerLink]="getCategoriesRoute()"
-    routerLinkActive="active"
-    class="menu-item"
-    (click)="closeSidebar()">
-
-    <span class="menu-icon">▦</span>
-
-    <span>Categories</span>
-
-  </a>
-
-}
-
-  }
+      </a>
 
 
-  <!-- Logout -->
-  <button
-    type="button"
-    class="menu-item logout-item"
-    (click)="logout()">
+      <!-- Super Admin - Tenants -->
+      @if (isSuperAdmin) {
 
-    <span class="menu-icon">↪</span>
+        <a
+          routerLink="/superadmin/tenants"
+          routerLinkActive="active"
+          class="menu-item"
+          (click)="closeSidebar()">
 
-    <span>Logout</span>
+          <span class="menu-icon">
+            ▣
+          </span>
 
-  </button>
+          <span class="menu-label">
+            Tenants
+          </span>
 
-</nav>
+        </a>
+
+      }
+
+
+      <!-- Categories -->
+      @if (isAdmin || isManager) {
+
+        <a
+          [routerLink]="getCategoriesRoute()"
+          routerLinkActive="active"
+          class="menu-item"
+          (click)="closeSidebar()">
+
+          <span class="menu-icon">
+            ▦
+          </span>
+
+          <span class="menu-label">
+            Categories
+          </span>
+
+        </a>
+
+      }
+
+
+      <!-- Products -->
+      @if (isAdmin || isManager) {
+
+        <a
+          [routerLink]="getProductsRoute()"
+          routerLinkActive="active"
+          class="menu-item"
+          (click)="closeSidebar()">
+
+          <span class="menu-icon">
+            ◈
+          </span>
+
+          <span class="menu-label">
+            Products
+          </span>  
+
+        </a>
+       
+
+      }
+
+
+      <div class="menu-section-title secondary-section">
+        ACCOUNT
+      </div>
+
+
+      <!-- Logout -->
+      <button
+        type="button"
+        class="menu-item logout-item"
+        (click)="logout()">
+
+        <span class="menu-icon logout-icon">
+          ↪
+        </span>
+
+        <span class="menu-label">
+          Logout
+        </span>
+
+      </button>
+
+    </nav>
+
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+
+      <div class="sidebar-footer-line"></div>
+
+      <span>
+        POS Management System
+      </span>
+
+      <small>
+        v1.0
+      </small>
+
+    </div>
 
   </aside>
 

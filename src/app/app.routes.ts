@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
+import { ChangePassword } from './features/auth/change-password/change-password';
 import { Dashboard } from './features/dashboard/dashboard';
 import { TenantList } from './features/super-admin/tenants/tenant-list/tenant-list';
 import { CategoryList } from './features/categories/category-list/category-list';
@@ -13,6 +14,8 @@ import { TenantDetail } from './features/super-admin/tenants/tenant-detail/tenan
 import { BusinessCreate } from './features/super-admin/tenants/business-create/business-create';
 import { BusinessDetail } from './features/super-admin/tenants/business-detail/business-detail';
 import { BranchCreate } from './features/super-admin/tenants/business-detail/branch-create/branch-create';
+import { ProductCreate } from './features/products/product-create/product-create';
+import { ProductList } from './features/products/product-list/product-list';
 
 export const routes: Routes = [
   {
@@ -75,6 +78,17 @@ export const routes: Routes = [
 {
   path: ':tenantId/categories/create',
   component: CategoryCreate
+},
+{
+  path: ':tenantId/products',
+  component: ProductList
+},
+{
+  path: ':tenantId/products/create',
+  component: ProductCreate
+},
+{ path: ':tenantId/change-password', 
+  component: ChangePassword 
 },
       {
         path: '',

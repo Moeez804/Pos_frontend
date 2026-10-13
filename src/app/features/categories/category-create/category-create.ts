@@ -74,42 +74,53 @@ export class CategoryCreate implements OnInit {
     }
   }
 
-  loadBranches(): void {
-    this.isLoadingBranches = true;
-    this.errorMessage = '';
-const businessId =
-  this.authService.getBusinessId();
+loadBranches(): void {
+  this.isLoadingBranches = true;
+  this.errorMessage = '';
 
-if (businessId === null) {
-  this.errorMessage =
-    'Business information is missing.';
+  const businessId =
+    this.authService.getBusinessId();
 
-  this.isLoadingBranches = false;
-  return;
-}
-
-this.branchService.getAll(businessId).subscribe({
-  next: (response) => {
-    this.branches = response.filter(
-      branch => branch.isActive
-    );
-
-    this.isLoadingBranches = false;
-  },
-
-  error: (error) => {
-    console.error(
-      'Failed to load branches:',
-      error
-    );
-
+  if (businessId === null) {
     this.errorMessage =
-      'Unable to load branches.';
+      'Business information is missing.';
 
     this.isLoadingBranches = false;
+    return;
   }
-});
-  }
+
+  this.branchService.getAll(businessId).subscribe({
+    next: (response) => {
+      this.branches = response.filter(
+        branch => branch.isActive
+      );
+
+      // Main branch ko default select karo
+      const mainBranch =
+        this.branches.find(
+          branch => branch.isMainBranch
+        );
+
+      if (mainBranch) {
+        this.branchId = mainBranch.id;
+      }
+
+      this.isLoadingBranches = false;
+    },
+
+    error: (error) => {
+      console.error(
+        'Failed to load branches:',
+        error
+      );
+
+      this.errorMessage =
+        'Unable to load branches.';
+
+      this.isLoadingBranches = false;
+    }
+  });
+}
 
   createCategory(): void {
     this.errorMessage = '';

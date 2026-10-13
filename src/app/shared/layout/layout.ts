@@ -32,23 +32,32 @@ export class Layout {
   isManager = false;
 
   isSidebarOpen = false;
+  isProfileMenuOpen = false;
 
   tenantId: number | null = null;
+  userInitials = 'U';
 
-  ngOnInit(): void {
-    this.isSuperAdmin =
-      this.authService.isSuperAdmin();
+ngOnInit(): void {
+  this.isSuperAdmin =
+    this.authService.isSuperAdmin();
 
-    this.isAdmin =
-      this.authService.isAdmin();
+  this.isAdmin =
+    this.authService.isAdmin();
 
-    this.isManager =
-      this.authService.isManager();
+  this.isManager =
+    this.authService.isManager();
 
-    this.tenantId =
-      this.authService.getTenantId();
+  this.tenantId =
+    this.authService.getTenantId();
+
+  const username =
+    this.authService.getUsername();
+
+  if (username) {
+    this.userInitials =
+      username.substring(0, 2).toUpperCase();
   }
-
+}
   toggleSidebar(): void {
     this.isSidebarOpen =
       !this.isSidebarOpen;
@@ -56,6 +65,15 @@ export class Layout {
 
   closeSidebar(): void {
     this.isSidebarOpen = false;
+  }
+
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen =
+      !this.isProfileMenuOpen;
+  }
+
+  closeProfileMenu(): void {
+    this.isProfileMenuOpen = false;
   }
 
   getDashboardRoute(): string {
@@ -77,14 +95,21 @@ export class Layout {
 
     return '/login';
   }
-    createCategoriesRoute(): string {
+    getProductsRoute(): string {
+  if (this.tenantId !== null) {
+    return `/${this.tenantId}/products`;
+  }
+
+  return '/login';
+}
+
+  getChangePasswordRoute(): string {
     if (this.tenantId !== null) {
-      return `/${this.tenantId}/categories/create`;
+      return `/${this.tenantId}/change-password`;
     }
 
     return '/login';
   }
-
   logout(): void {
     const tenantId =
       this.authService.getTenantId();

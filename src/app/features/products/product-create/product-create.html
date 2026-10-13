@@ -1,0 +1,349 @@
+<div class="product-create-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-heading">
+      <div class="page-eyebrow">PRODUCT MANAGEMENT</div>
+      <h1>Create Product</h1>
+      <p>
+        Add product details, configure pricing and assign branches.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="goBack()">
+      <span aria-hidden="true">←</span>
+      Back to Products
+    </button>
+  </div>
+
+  <!-- Messages -->
+  @if (errorMessage) {
+    <div class="message error" role="alert">
+      <span class="message-icon">!</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="message success" role="status">
+      <span class="message-icon">✓</span>
+      <span>{{ successMessage }}</span>
+    </div>
+  }
+
+  <!-- Product Form -->
+  <form
+    #productForm="ngForm"
+    (ngSubmit)="createProduct()">
+
+    <!-- Product Information -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-heading-main">
+          <div class="section-icon product-icon">▦</div>
+          <div>
+            <h2>Product Information</h2>
+            <p>Basic details used to identify and organize this product.</p>
+          </div>
+        </div>
+        <span class="section-step">01</span>
+      </div>
+
+      <!-- Name, Category, Unit -->
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="name">
+            Product Name <span class="required">*</span>
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            [(ngModel)]="name"
+            placeholder="e.g. Coca-Cola 500ml"
+            autocomplete="off"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="category">
+            Category <span class="required">*</span>
+            <span class="category-label-action">
+              <a
+                [routerLink]="createCategoriesRoute()"
+                class="categories-link"
+                aria-label="Create category"
+                title="Create category">+</a>
+            </span>
+          </label>
+
+          @if (isLoadingCategories) {
+            <div class="loading-text">Loading categories...</div>
+          } @else {
+            <select
+              id="category"
+              name="categoryId"
+              [(ngModel)]="categoryId"
+              required>
+              <option [ngValue]="null">Select Category</option>
+              @for (category of categories; track category.id) {
+                <option [ngValue]="category.id">
+                  {{ category.name }}
+                </option>
+              }
+            </select>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="unit">
+            Unit <span class="required">*</span>
+          </label>
+          <select
+            id="unit"
+            name="unit"
+            [(ngModel)]="unit"
+            required>
+            <option value="Piece">Piece</option>
+            <option value="Kg">Kg</option>
+            <option value="Gram">Gram</option>
+            <option value="Liter">Liter</option>
+            <option value="Ml">Ml</option>
+            <option value="Box">Box</option>
+            <option value="Pack">Pack</option>
+            <option value="Dozen">Dozen</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- SKU and Barcode -->
+      <div class="form-grid secondary-grid">
+
+        <div class="form-group">
+          <label for="sku">SKU</label>
+          <input
+            id="sku"
+            name="sku"
+            type="text"
+            [(ngModel)]="sku"
+            placeholder="Enter SKU (optional)"
+            autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label for="barcode">Barcode</label>
+          <input
+            #barcodeInput
+            id="barcode"
+            name="barcode"
+            type="text"
+            [(ngModel)]="barcode"
+            placeholder="Scan or enter barcode"
+            autocomplete="off"
+            inputmode="numeric"
+            (keydown)="onBarcodeKeydown($event)">
+        </div>
+
+      </div>
+
+      <!-- Description -->
+      <div class="form-group description-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="description"
+          placeholder="Add product details (optional)"
+          rows="2">
+        </textarea>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-heading-main">
+          <div class="section-icon pricing-icon">$</div>
+          <div>
+            <h2>Pricing</h2>
+            <p>Set the product cost, selling price and applicable tax.</p>
+          </div>
+        </div>
+        <span class="section-step">02</span>
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="costPrice">
+            Cost Price <span class="required">*</span>
+          </label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">Rs.</span>
+            <input
+              id="costPrice"
+              name="costPrice"
+              type="number"
+              [(ngModel)]="costPrice"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="salePrice">
+            Sale Price <span class="required">*</span>
+          </label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">Rs.</span>
+            <input
+              id="salePrice"
+              name="salePrice"
+              type="number"
+              [(ngModel)]="salePrice"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="taxRate">Tax Rate (%)</label>
+          <div class="input-with-suffix">
+            <input
+              id="taxRate"
+              name="taxRate"
+              type="number"
+              [(ngModel)]="taxRate"
+              placeholder="0.00"
+              min="0"
+              step="0.01">
+            <span class="input-suffix">%</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Branch Assignment -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-heading-main">
+          <div class="section-icon branch-icon">⌖</div>
+          <div>
+            <h2>Branch Assignment</h2>
+            <p>
+              Choose where this product will be available and set
+              each branch's reorder alert level.
+            </p>
+          </div>
+        </div>
+        <span class="section-step">03</span>
+      </div>
+
+      @if (isLoadingBranches) {
+        <div class="loading-text">Loading branches...</div>
+      } @else if (branches.length === 0) {
+        <div class="empty-state">
+          No active branches available.
+        </div>
+      } @else {
+        <div class="branch-list">
+
+          @for (branch of branches; track branch.id) {
+            <div
+              class="branch-card"
+              [class.selected]="isBranchSelected(branch.id)">
+
+              <div class="branch-header">
+                <label class="branch-checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="isBranchSelected(branch.id)"
+                    [disabled]="isManager"
+                    (change)="toggleBranch(branch)">
+
+                  <span class="branch-name">
+                    {{ branch.name }}
+                    @if (branch.isMainBranch) {
+                      <span class="main-badge">Main Branch</span>
+                    }
+                  </span>
+                </label>
+
+                @if (isBranchSelected(branch.id)) {
+                  <span class="selected-indicator" aria-label="Selected">✓</span>
+                }
+              </div>
+
+              @if (isBranchSelected(branch.id)) {
+                <div class="reorder-section">
+                  <label [for]="'reorder-' + branch.id">
+                    Reorder Level
+                  </label>
+                  <input
+                    [id]="'reorder-' + branch.id"
+                    [name]="'reorder-' + branch.id"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [ngModel]="getReorderLevel(branch.id)"
+                    (ngModelChange)="setReorderLevel(branch.id, $event)">
+                  <small>
+                    Alert when stock reaches this level.
+                  </small>
+                </div>
+              }
+
+            </div>
+          }
+
+        </div>
+      }
+    </section>
+
+    <!-- Sticky-style Action Footer -->
+    <div class="form-actions">
+      <div class="actions-note">
+        <span class="required">*</span>
+        Required fields
+      </div>
+
+      <div class="actions-buttons">
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="goBack()"
+          [disabled]="isSaving">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="save-button"
+          [disabled]="
+            isSaving ||
+            isLoadingCategories ||
+            isLoadingBranches
+          ">
+          @if (isSaving) {
+            <span class="button-spinner"></span>
+            Creating Product...
+          } @else {
+            <span aria-hidden="true">✓</span>
+            Create Product
+          }
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>

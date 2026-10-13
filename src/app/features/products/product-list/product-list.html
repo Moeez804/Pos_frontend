@@ -1,0 +1,463 @@
+<div class="product-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+
+    <div class="page-heading">
+      <div class="page-icon">▦</div>
+
+      <div>
+        <h1>Products</h1>
+        <p>Manage your products, pricing and branch assignments.</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goBack()">
+        Back to Dashboard
+      </button>
+
+      <a
+        [routerLink]="getCreateProductRoute()"
+        class="add-button">
+        <span class="add-icon">+</span>
+        Add Product
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <!-- Messages -->
+  @if (errorMessage) {
+    <div class="message error">
+      <span class="message-icon">!</span>
+
+      <span>{{ errorMessage }}</span>
+
+      <button
+        type="button"
+        class="message-close"
+        (click)="errorMessage = ''"
+        aria-label="Dismiss error">
+        ×
+      </button>
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="message success">
+      <span class="message-icon">✓</span>
+
+      <span>{{ successMessage }}</span>
+
+      <button
+        type="button"
+        class="message-close"
+        (click)="successMessage = ''"
+        aria-label="Dismiss message">
+        ×
+      </button>
+    </div>
+  }
+<div class="summary-grid">
+
+  <!-- Total Products -->
+  <div class="summary-card">
+    <div class="summary-icon products-icon">#</div>
+
+    <div class="summary-content">
+      <span class="summary-label">Total Products</span>
+      <strong>{{ totalProducts }}</strong>
+      <small>All products</small>
+    </div>
+  </div>
+
+  <!-- Active Products -->
+  <div class="summary-card">
+    <div class="summary-icon branch-summary-icon">✓</div>
+
+    <div class="summary-content">
+      <span class="summary-label">Active Products</span>
+      <strong>{{ activeProducts }}</strong>
+      <small>Currently active</small>
+    </div>
+  </div>
+
+  <!-- Inactive Products -->
+  <div class="summary-card">
+    <div class="summary-icon search-summary-icon">!</div>
+
+    <div class="summary-content">
+      <span class="summary-label">Inactive Products</span>
+      <strong>{{ inactiveProducts }}</strong>
+      <small>Currently inactive</small>
+    </div>
+  </div>
+
+  <!-- Search Results -->
+  <div class="summary-card">
+    <div class="summary-icon results-summary-icon">⌕</div>
+
+    <div class="summary-content">
+      <span class="summary-label">Search Results</span>
+      <strong>{{ filteredProducts.length }}</strong>
+      <small>Matching products</small>
+    </div>
+  </div>
+
+</div>
+  <!-- Product List Card -->
+  <div class="product-card">
+
+    <div class="list-header">
+
+      <div class="list-heading">
+        <h2>Product Inventory</h2>
+        <p>View and manage your product catalogue.</p>
+      </div>
+
+      <a
+        [routerLink]="getCategoriesRoute()"
+        class="categories-link">
+        View Categories
+        <span>→</span>
+      </a>
+
+    </div>
+
+
+    <!-- Search -->
+    <div class="toolbar">
+
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+
+        <input
+          id="productSearch"
+          name="productSearch"
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search by product, category, SKU or barcode..."
+          autocomplete="off">
+
+        @if (searchTerm) {
+          <button
+            type="button"
+            class="clear-search"
+            (click)="clearSearch()"
+            aria-label="Clear search">
+            ×
+          </button>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="refresh-button"
+        (click)="loadProducts()"
+        [disabled]="isLoading">
+        <span [class.refreshing]="isLoading">↻</span>
+        Refresh
+      </button>
+
+    </div>
+
+
+    <!-- Loading -->
+    @if (isLoading) {
+
+      <div class="state-box loading-state">
+        <div class="loader"></div>
+
+        <div>
+          <strong>Loading products</strong>
+          <p>Please wait while we retrieve your product list.</p>
+        </div>
+      </div>
+
+    } @else {
+
+      <!-- Empty: No Products -->
+      @if (products.length === 0) {
+
+        <div class="empty-state">
+
+          <div class="empty-icon">▦</div>
+
+          <h3>No products yet</h3>
+
+          <p>
+            Your product catalogue is empty.
+            Create your first product to get started.
+          </p>
+
+          <a
+            [routerLink]="getCreateProductRoute()"
+            class="empty-button">
+            <span>+</span>
+            Create First Product
+          </a>
+
+        </div>
+
+      } @else {
+
+        <!-- Empty: Search -->
+        @if (filteredProducts.length === 0) {
+
+          <div class="empty-state search-empty">
+
+            <div class="empty-icon">⌕</div>
+
+            <h3>No matching products</h3>
+
+            <p>
+              Try a different product name, category,
+              SKU or barcode.
+            </p>
+
+            <button
+              type="button"
+              class="empty-button"
+              (click)="clearSearch()">
+              Clear Search
+            </button>
+
+          </div>
+
+        } @else {
+
+          <!-- Table -->
+          <div class="table-container">
+
+            <table class="product-table">
+
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>SKU / Barcode</th>
+                  <th>Pricing</th>
+                  <th>Branches</th>
+                  <th>Status</th>
+                  <th class="action-header">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                @for (
+                  product of filteredProducts;
+                  track product.id
+                ) {
+
+                  <tr>
+
+                    <!-- Product -->
+                    <td>
+                      <div class="product-info">
+
+                        <div class="product-avatar">
+                          {{ product.name.charAt(0).toUpperCase() }}
+                        </div>
+
+                        <div class="product-details">
+
+                          <strong>{{ product.name }}</strong>
+
+                          <span class="category-name">
+                            {{ product.categoryName }}
+                          </span>
+
+                          @if (product.description) {
+                            <span class="product-description">
+                              {{ product.description }}
+                            </span>
+                          }
+
+                        </div>
+
+                      </div>
+                    </td>
+
+
+                    <!-- SKU / Barcode -->
+                    <td>
+                      <div class="identifiers">
+
+                        <div class="identifier-row">
+                          <span class="identifier-label">SKU</span>
+
+                          <span class="identifier-value">
+                            {{ product.sku || '—' }}
+                          </span>
+                        </div>
+
+                        <div class="identifier-row">
+                          <span class="identifier-label">Barcode</span>
+
+                          <span class="identifier-value barcode-value">
+                            {{ product.barcode || '—' }}
+                          </span>
+                        </div>
+
+                      </div>
+                    </td>
+
+
+                    <!-- Pricing -->
+                    <td>
+                      <div class="pricing-info">
+
+                        <strong class="sale-price">
+                          {{ product.salePrice | number:'1.2-2' }}
+                        </strong>
+
+                        <span class="price-caption">
+                          Sale price / {{ product.unit }}
+                        </span>
+
+                        <span class="cost-price">
+                          Cost:
+                          {{ product.costPrice | number:'1.2-2' }}
+                        </span>
+
+                        @if (product.taxRate > 0) {
+                          <span class="tax-label">
+                            Tax: {{ product.taxRate }}%
+                          </span>
+                        }
+
+                      </div>
+                    </td>
+
+
+                    <!-- Branches -->
+                    <td>
+                      <div class="branch-info">
+
+                        <span class="branch-count">
+                          {{ product.branches.length }}
+                          {{ product.branches.length === 1 ? 'Branch' : 'Branches' }}
+                        </span>
+
+                        <span class="branch-names">
+                          {{ getBranchNames(product) }}
+                        </span>
+
+                        @if (product.branches.length > 0) {
+                          <div class="reorder-info">
+                            @for (
+                              branch of product.branches;
+                              track branch.branchId
+                            ) {
+                              <span class="reorder-item">
+                                {{ branch.branchName }}:
+                                reorder at {{ branch.reorderLevel }}
+                              </span>
+                            }
+                          </div>
+                        }
+
+                      </div>
+                    </td>
+
+
+                    <!-- Status -->
+                    <td>
+                      <span
+                        class="status-badge"
+                        [class.active]="product.isActive"
+                        [class.inactive]="!product.isActive">
+
+                        <span class="status-dot"></span>
+
+                        {{ product.isActive ? 'Active' : 'Inactive' }}
+
+                      </span>
+                    </td>
+
+
+                    <!-- Actions -->
+                    <td>
+                      <div class="row-actions">
+
+                        @if (isAdmin) {
+
+                          <button
+                            type="button"
+                            class="action-button deactivate-button"
+                            [disabled]="
+                              isDeleting ||
+                              !product.isActive
+                            "
+                            (click)="deleteProduct(product)">
+
+                            @if (deletingProductId === product.id) {
+                              Processing...
+                            } @else if (!product.isActive) {
+                              Inactive
+                            } @else {
+                              Deactivate
+                            }
+
+                          </button>
+
+                        } @else {
+
+                          <span class="permission-note">
+                            View only
+                          </span>
+
+                        }
+
+                      </div>
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          <!-- Table Footer -->
+          <div class="table-footer">
+
+            <span>
+              Showing
+              <strong>{{ filteredProducts.length }}</strong>
+              of
+              <strong>{{ totalProducts }}</strong>
+              products
+            </span>
+
+            @if (searchTerm) {
+              <button
+                type="button"
+                class="footer-clear-button"
+                (click)="clearSearch()">
+                Clear filters
+              </button>
+            }
+
+          </div>
+
+        }
+
+      }
+
+    }
+
+  </div>
+
+</div>

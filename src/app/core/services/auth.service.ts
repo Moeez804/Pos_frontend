@@ -133,6 +133,19 @@ export class AuthService {
     return Number(payload['branchId']);
   }
   getBusinessId(): number | null { const payload = this.getTokenPayload(); if (!payload?.['businessId']) { return null; } return Number(payload['businessId']); }
+getUsername(): string { const payload = this.getTokenPayload(); return payload?.[ 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' ] || payload?.unique_name || ''; }
+  changePassword(
+  currentPassword: string,
+  newPassword: string
+): Observable<{ message: string }> {
+  return this.http.put<{ message: string }>(
+    `${this.apiUrl}/Auth/change-password`,
+    {
+      currentPassword,
+      newPassword
+    }
+  );
+}
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);

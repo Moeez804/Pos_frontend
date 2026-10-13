@@ -1,135 +1,179 @@
 <div class="category-create-page">
 
+  <!-- Page Header -->
   <div class="page-header">
-    <div>
-      <h1>Create Category</h1>
-      <p>Add a new category to a branch.</p>
+
+    <div class="page-heading">
+      <div>
+        <span class="page-eyebrow">CATEGORY MANAGEMENT</span>
+        <h1>Create Category</h1>
+        <p>Add a category to organize your products.</p>
+      </div>
     </div>
 
     <button
       type="button"
       class="back-button"
       (click)="goBack()">
+      <span class="back-icon">←</span>
       Back to Categories
     </button>
+
   </div>
 
+  <!-- Error Message -->
   @if (errorMessage) {
     <div class="message error">
-      {{ errorMessage }}
+      <span class="message-icon">!</span>
+      <span>{{ errorMessage }}</span>
     </div>
   }
 
+  <!-- Success Message -->
   @if (successMessage) {
     <div class="message success">
-      {{ successMessage }}
+      <span class="message-icon">✓</span>
+      <span>{{ successMessage }}</span>
     </div>
   }
 
+  <!-- Category Form -->
   <div class="form-card">
 
-    <div class="form-group">
-      <label for="name">
-        Category Name
-      </label>
+    <!-- Section Header -->
+    <div class="section-heading">
+      <div class="section-number">01</div>
 
-      <input
-        id="name"
-        type="text"
-        [(ngModel)]="name"
-        placeholder="Enter category name"
-      />
+      <div>
+        <h2>Category Information</h2>
+        <p>Enter the basic details for this category.</p>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="description">
-        Description
-      </label>
+    <div class="form-grid">
 
-      <textarea
-        id="description"
-        rows="4"
-        [(ngModel)]="description"
-        placeholder="Enter category description">
-      </textarea>
-    </div>
-
-    @if (isAdmin) {
-
+      <!-- Category Name -->
       <div class="form-group">
-        <label for="branch">
-          Branch
+        <label for="name">
+          Category Name
+          <span class="required">*</span>
         </label>
 
-        @if (isLoadingBranches) {
+        <input
+          id="name"
+          type="text"
+          [(ngModel)]="name"
+          placeholder="e.g. Beverages"
+          autocomplete="off"
+        />
 
-          <p class="loading">
-            Loading branches...
-          </p>
+        <span class="field-hint">
+          Use a clear name that's easy to recognize.
+        </span>
+      </div>
 
-        } @else {
+      <!-- Branch -->
+      @if (isAdmin) {
+        <div class="form-group">
+          <label for="branch">
+            Assign to Branch
+            <span class="required">*</span>
+          </label>
 
-          <select
-            id="branch"
-            [(ngModel)]="branchId">
+          @if (isLoadingBranches) {
 
-            <option [ngValue]="null">
-              Select Branch
-            </option>
+            <div class="loading">
+              <span class="loading-dot"></span>
+              Loading branches...
+            </div>
 
-            @for (
-              branch of branches;
-              track branch.id
-            ) {
+          } @else {
 
-              <option [ngValue]="branch.id">
-                {{ branch.name }}
-                @if (branch.isMainBranch) {
-                  (Main)
-                }
+            <select
+              id="branch"
+              [(ngModel)]="branchId">
+
+              <option [ngValue]="null">
+                Select Branch
               </option>
 
-            }
+              @for (
+                branch of branches;
+                track branch.id
+              ) {
+                <option [ngValue]="branch.id">
+                  {{ branch.name }}
+                  @if (branch.isMainBranch) {
+                    (Main)
+                  }
+                </option>
+              }
 
-          </select>
+            </select>
 
-        }
+            <span class="field-hint">
+              Choose the branch where this category will be available.
+            </span>
 
+          }
+        </div>
+      }
+
+      <!-- Description -->
+      <div class="form-group description-group">
+        <label for="description">
+          Description
+          <span class="optional-label">Optional</span>
+        </label>
+
+        <textarea
+          id="description"
+          rows="4"
+          [(ngModel)]="description"
+          placeholder="Describe what kind of products belong to this category...">
+        </textarea>
+
+        <span class="field-hint">
+          Add extra details to help identify this category.
+        </span>
       </div>
 
-    }
+    </div>
 
-    <!-- @if (!isAdmin) {
-
-      <div class="info-message">
-        The category will automatically be assigned
-        to your branch.
-      </div>
-
-    } -->
-
+    <!-- Form Footer -->
     <div class="form-actions">
 
-      <button
-        type="button"
-        class="cancel-button"
-        (click)="goBack()">
-        Cancel
-      </button>
+      <div class="form-note">
+        <span class="required">*</span>
+        Required information
+      </div>
 
-      <button
-        type="button"
-        class="save-button"
-        (click)="createCategory()"
-        [disabled]="isSaving">
+      <div class="action-buttons">
 
-        @if (isSaving) {
-          Creating...
-        } @else {
-          Create Category
-        }
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="goBack()">
+          Cancel
+        </button>
 
-      </button>
+        <button
+          type="button"
+          class="save-button"
+          (click)="createCategory()"
+          [disabled]="isSaving">
+
+          @if (isSaving) {
+            <span class="button-spinner"></span>
+            Creating...
+          } @else {
+            <span class="button-icon">+</span>
+            Create Category
+          }
+
+        </button>
+
+      </div>
 
     </div>
 

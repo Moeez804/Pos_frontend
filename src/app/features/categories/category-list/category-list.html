@@ -1,7 +1,6 @@
 <div class="category-page">
 
   <div class="page-header">
-
     <div class="page-title">
       <div>
         <h1>Categories</h1>
@@ -9,221 +8,249 @@
           Organize and manage product categories across your branches.
         </p>
       </div>
-
     </div>
 
     <a
       [routerLink]="createCategoriesRoute()"
       class="add-button">
-
       <span class="add-icon">+</span>
-
       <span>Add Category</span>
-
     </a>
-
   </div>
 
-  @if (!isLoading && !errorMessage) {
+  @if (addCategorySuccess) {
+    <div class="inline-message success-message">
+      <span class="message-symbol">✓</span>
+      {{ addCategorySuccess }}
+      <button
+        type="button"
+        class="message-close"
+        aria-label="Dismiss message"
+        (click)="addCategorySuccess = ''">
+        ×
+      </button>
+    </div>
+  }
 
+  @if (!isLoading && !errorMessage) {
     <div class="summary-grid">
 
       <div class="summary-card">
-
-        <div class="summary-icon">
-          #
-        </div>
-
+        <div class="summary-icon">#</div>
         <div>
-
-          <span class="summary-label">
-            Total Categories
-          </span>
-
-          <strong>
-            {{ totalCategories }}
-          </strong>
-
+          <span class="summary-label">Total Categories</span>
+          <strong>{{ totalCategories }}</strong>
         </div>
-
       </div>
 
-
       <div class="summary-card">
-
-        <div class="summary-icon active-icon">
-          ✓
-        </div>
-
+        <div class="summary-icon active-icon">✓</div>
         <div>
-
-          <span class="summary-label">
-            Active
-          </span>
-
-          <strong>
-            {{ activeCategories }}
-          </strong>
-
+          <span class="summary-label">Active</span>
+          <strong>{{ activeCategories }}</strong>
         </div>
-
       </div>
 
-
       <div class="summary-card">
-
-        <div class="summary-icon inactive-icon">
-          !
-        </div>
-
+        <div class="summary-icon inactive-icon">!</div>
         <div>
-
-          <span class="summary-label">
-            Inactive
-          </span>
-
-          <strong>
-            {{ inactiveCategories }}
-          </strong>
-
+          <span class="summary-label">Inactive</span>
+          <strong>{{ inactiveCategories }}</strong>
         </div>
-
       </div>
 
-
       <div class="summary-card">
-
-        <div class="summary-icon branch-icon">
-          ⌂
-        </div>
-
+        <div class="summary-icon branch-icon">⌂</div>
         <div>
-
-          <span class="summary-label">
-            Branches
-          </span>
-
-          <strong>
-            {{ branches.length }}
-          </strong>
-
+          <span class="summary-label">Branches</span>
+          <strong>{{ branches.length }}</strong>
         </div>
-
       </div>
 
     </div>
-
   }
-
 
   @if (isLoading) {
-
     <div class="state-box loading-box">
-
       <div class="loader"></div>
-
-      <span>
-        Loading categories...
-      </span>
-
+      <span>Loading categories...</span>
     </div>
-
   }
-
 
   @if (errorMessage) {
-
     <div class="state-box error-box">
-
-      <div class="error-icon">
-        !
-      </div>
-
+      <div class="error-icon">!</div>
       <div>
-
-        <strong>
-          Unable to load categories
-        </strong>
-
-        <p>
-          {{ errorMessage }}
-        </p>
-
+        <strong>Unable to load categories</strong>
+        <p>{{ errorMessage }}</p>
       </div>
-
     </div>
-
   }
 
-
   @if (!isLoading && !errorMessage) {
-
-    @for (
-      branch of branches;
-      track branch.branchId
-    ) {
+    @for (branch of branches; track branch.branchId) {
 
       <section class="branch-section">
 
         <div class="branch-header">
-
           <div class="branch-info">
-
-            <div class="branch-icon">
-              ⌂
-            </div>
-
+            <div class="branch-icon">⌂</div>
             <div>
-
-              <h2>
-                {{ branch.branchName }}
-              </h2>
-
+              <h2>{{ branch.branchName }}</h2>
               <span>
-
                 {{ branch.categories.length }}
-
                 {{
                   branch.categories.length === 1
                     ? 'category'
                     : 'categories'
                 }}
-
               </span>
-
             </div>
-
           </div>
 
           <div class="branch-line"></div>
 
+          @if (isAdmin) {
+            <button
+              type="button"
+              class="add-existing-button"
+              [class.panel-open]="activeAddBranchId === branch.branchId"
+              [disabled]="isAddingExistingCategory"
+              (click)="openExistingCategoryPanel(branch.branchId)">
+              <span class="add-existing-icon">+</span>
+              {{
+                activeAddBranchId === branch.branchId
+                  ? 'Close'
+                  : 'Add Existing'
+              }}
+            </button>
+          }
         </div>
 
+        @if (isAdmin && activeAddBranchId === branch.branchId) {
+          <div class="existing-category-panel">
+
+            <div class="existing-panel-heading">
+              <div>
+                <h3>Add Existing Category</h3>
+                <p>
+                  Select a category already created for your business
+                  to make it available in {{ branch.branchName }}.
+                </p>
+              </div>
+            </div>
+
+            @if (isLoadingAvailableCategories) {
+              <div class="panel-loading">
+                <div class="small-loader"></div>
+                <span>Loading available categories...</span>
+              </div>
+            } @else {
+
+              @if (addCategoryError) {
+                <div class="inline-message error-message">
+                  {{ addCategoryError }}
+                </div>
+              }
+
+              @if (availableCategories.length === 0 && !addCategoryError) {
+                <div class="no-available-categories">
+                  <span class="no-categories-icon">✓</span>
+                  <div>
+                    <strong>All caught up</strong>
+                    <p>
+                      There are no additional active categories
+                      available for this branch.
+                    </p>
+                  </div>
+                </div>
+              } @else if (availableCategories.length > 0) {
+
+                <div class="existing-category-controls">
+
+                  <div class="existing-category-field">
+                    <label
+                      [attr.for]="'existing-category-' + branch.branchId">
+                      Select Category
+                    </label>
+
+                    <select
+                      [id]="'existing-category-' + branch.branchId"
+                      [value]="selectedExistingCategoryId ?? ''"
+                      (change)="selectedExistingCategoryId = $any($event.target).value ? +$any($event.target).value : null">
+
+                      <option value="">
+                        Choose a category
+                      </option>
+
+                      @for (
+                        category of availableCategories;
+                        track category.id
+                      ) {
+                        <option [value]="category.id">
+                          {{ category.name }}
+                          @if (category.description) {
+                            — {{ category.description }}
+                          }
+                        </option>
+                      }
+
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="confirm-add-button"
+                    [disabled]="
+                      selectedExistingCategoryId === null ||
+                      isAddingExistingCategory
+                    "
+                    (click)="addExistingCategory()">
+                    @if (isAddingExistingCategory) {
+                      Adding...
+                    } @else {
+                      <span>+</span>
+                      Add to Branch
+                    }
+                  </button>
+
+                </div>
+              }
+            }
+
+            <div class="existing-panel-footer">
+              <span>
+                Only categories not currently active in this branch
+                are listed.
+              </span>
+
+              <button
+                type="button"
+                class="cancel-add-button"
+                [disabled]="isAddingExistingCategory"
+                (click)="closeExistingCategoryPanel()">
+                Cancel
+              </button>
+            </div>
+
+          </div>
+        }
 
         @if (branch.categories.length === 0) {
 
           <div class="empty-box">
-
-            <div class="empty-icon">
-              +
-            </div>
-
-            <h3>
-              No categories yet
-            </h3>
-
+            <div class="empty-icon">+</div>
+            <h3>No categories yet</h3>
             <p>
-              Add your first category to this branch.
+              Create a new category or add an existing category
+              to this branch.
             </p>
 
             <a
               [routerLink]="createCategoriesRoute()"
               class="empty-button">
-
               Add Category
-
             </a>
-
           </div>
 
         } @else {
@@ -231,155 +258,77 @@
           <div class="table-card">
 
             <div class="table-header">
-
               <div>
-
-                <h3>
-                  Category List
-                </h3>
-
+                <h3>Category List</h3>
                 <span>
                   {{ branch.categories.length }}
                   categories in this branch
                 </span>
-
               </div>
-
             </div>
 
-
             <div class="table-container">
-
               <table class="category-table">
 
                 <thead>
-
                   <tr>
-
-                    <th>
-                      Category
-                    </th>
-
-                    <th>
-                      Description
-                    </th>
-
-                    <th>
-                      Created
-                    </th>
-
-                    <th>
-                      Status
-                    </th>
-
-                    <th class="action-header">
-                      Action
-                    </th>
-
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th class="action-header">Action</th>
                   </tr>
-
                 </thead>
 
-
                 <tbody>
-
                   @for (
-                    category of branch.categories;
-                    track category.id
+                   category of getPaginatedCategories(branch);
+                   track category.id
                   ) {
-
                     <tr>
 
                       <td>
-
                         <div class="category-info">
-
                           <div class="category-avatar">
-
-                            {{
-                              category.name
-                                .charAt(0)
-                                .toUpperCase()
-                            }}
-
+                            {{ category.name.charAt(0).toUpperCase() }}
                           </div>
 
                           <div>
-
-                            <strong>
-                              {{ category.name }}
-                            </strong>
-
-                            <span>
-                              Category #{{ category.id }}
-                            </span>
-
+                            <strong>{{ category.name }}</strong>
+                            <span>Category #{{ category.id }}</span>
                           </div>
-
                         </div>
-
                       </td>
 
-
                       <td>
-
                         <span class="description">
-
-                          {{
-                            category.description ||
-                            'No description'
-                          }}
-
+                          {{ category.description || 'No description' }}
                         </span>
-
                       </td>
 
-
                       <td>
-
                         <span class="created-date">
-
-                          {{
-                            category.createdAt
-                              | date:'dd MMM yyyy'
-                          }}
-
+                          {{ category.createdAt | date:'dd MMM yyyy' }}
                         </span>
-
                       </td>
-
 
                       <td>
-
                         @if (category.isActive) {
-
                           <span class="status active">
-
                             <span class="status-dot"></span>
-
                             Active
-
                           </span>
-
                         } @else {
-
                           <span class="status inactive">
-
                             <span class="status-dot"></span>
-
                             Inactive
-
                           </span>
-
                         }
-
                       </td>
-
 
                       <td class="action-cell">
 
                         @if (isAdmin) {
-
                           <div class="action-group">
 
                             <button
@@ -391,36 +340,25 @@
                                 updatingCategoryId === category.id ||
                                 updatingAllCategoryId === category.id
                               "
-                              (click)="
-                                updateBranchStatus(
-                                  category,
-                                  branch.branchId
-                                )
-                              ">
+                              (click)="updateBranchStatus(category, branch.branchId)">
 
                               @if (
                                 updatingCategoryId === category.id &&
                                 updatingBranchId === branch.branchId
                               ) {
-
                                 {{
                                   category.isActive
                                     ? 'Deactivating...'
                                     : 'Activating...'
                                 }}
-
                               } @else {
-
                                 {{
                                   category.isActive
                                     ? 'Deactivate'
                                     : 'Activate'
                                 }}
-
                               }
-
                             </button>
-
 
                             <button
                               type="button"
@@ -429,34 +367,24 @@
                                 updatingCategoryId !== null ||
                                 updatingAllCategoryId !== null
                               "
-                              (click)="
-                                updateAllBranchesStatus(category)
-                              ">
+                              (click)="updateAllBranchesStatus(category)">
 
-                              @if (
-                                updatingAllCategoryId === category.id
-                              ) {
-
+                              @if (updatingAllCategoryId === category.id) {
                                 {{
                                   category.isActive
                                     ? 'Deactivating All...'
                                     : 'Activating All...'
                                 }}
-
                               } @else {
-
                                 {{
                                   category.isActive
                                     ? 'Deactivate All'
                                     : 'Activate All'
                                 }}
-
                               }
-
                             </button>
 
                           </div>
-
                         } @else if (isManager) {
 
                           <button
@@ -464,60 +392,115 @@
                             class="status-button"
                             [class.deactivate]="category.isActive"
                             [class.activate]="!category.isActive"
-                            [disabled]="
-                              updatingCategoryId === category.id
-                            "
-                            (click)="
-                              updateBranchStatus(
-                                category,
-                                branch.branchId
-                              )
-                            ">
+                            [disabled]="updatingCategoryId === category.id"
+                            (click)="updateBranchStatus(category, branch.branchId)">
 
-                            @if (
-                              updatingCategoryId === category.id
-                            ) {
-
+                            @if (updatingCategoryId === category.id) {
                               {{
                                 category.isActive
                                   ? 'Deactivating...'
                                   : 'Activating...'
                               }}
-
                             } @else {
-
                               {{
                                 category.isActive
                                   ? 'Deactivate'
                                   : 'Activate'
                               }}
-
                             }
-
                           </button>
 
                         }
 
                       </td>
-
                     </tr>
-
                   }
-
                 </tbody>
 
               </table>
-
             </div>
+            <div class="category-pagination">
+
+  <div class="pagination-info">
+    Showing
+    <strong>{{ getStartIndex(branch) }}</strong>
+    to
+    <strong>{{ getEndIndex(branch) }}</strong>
+    of
+    <strong>{{ branch.categories.length }}</strong>
+    categories
+  </div>
+
+  <div class="pagination-controls">
+
+    <label
+      class="page-size-label"
+      [attr.for]="'page-size-' + branch.branchId">
+      Show
+    </label>
+
+    <select
+      class="page-size-select"
+      [id]="'page-size-' + branch.branchId"
+      [value]="getPageSize(branch.branchId)"
+      (change)="changePageSize(
+        branch.branchId,
+        $any($event.target).value
+      )">
+
+      @for (size of pageSizeOptions; track size) {
+        <option [value]="size">{{ size }}</option>
+      }
+
+      <option [value]="0">Show All</option>
+
+    </select>
+
+    @if (getPageSize(branch.branchId) !== 0) {
+      <div class="pagination-buttons">
+
+        <button
+          type="button"
+          class="pagination-button"
+          [disabled]="getCurrentPage(branch.branchId) === 1"
+          (click)="goToPage(
+            branch,
+            getCurrentPage(branch.branchId) - 1
+          )">
+          Previous
+        </button>
+
+        <span class="page-number">
+          {{ getCurrentPage(branch.branchId) }}
+          /
+          {{ getTotalPages(branch) }}
+        </span>
+
+        <button
+          type="button"
+          class="pagination-button"
+          [disabled]="
+            getCurrentPage(branch.branchId) >= getTotalPages(branch)
+          "
+          (click)="goToPage(
+            branch,
+            getCurrentPage(branch.branchId) + 1
+          )">
+          Next
+        </button>
+
+      </div>
+    }
+
+  </div>
+
+</div>
 
           </div>
-
         }
 
       </section>
-
     }
-
   }
 
 </div>

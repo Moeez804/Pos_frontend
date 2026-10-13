@@ -28,6 +28,14 @@ export class CategoryService {
       request
     );
   }
+  // Admin only
+getAvailableForBranch(
+  branchId: number
+): Observable<Category[]> {
+  return this.http.get<Category[]>(
+    `${this.apiUrl}/available/branch/${branchId}`
+  );
+}
 
   // Admin only
   addExistingToBranch(
